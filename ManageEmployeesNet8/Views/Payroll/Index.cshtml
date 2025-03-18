@@ -13,7 +13,12 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    
+                    <div class="offset-9 col-3 mb-2">
+                        <a class="btn btn-primary d-block mx-auto" asp-controller="Payroll" asp-action="Create">
+                            <i class="bi bi-plus-circle"></i>
+                            Nueva planilla
+                        </a>
+                    </div>
                     <div class="offset-12">
                         <div class="table-responsive">
                             @if (Model.Count() > 0)
