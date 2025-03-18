@@ -33,7 +33,6 @@ namespace ManageEmployeesNet8.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CreateEmployeeDto employeeDto)
         {
-
             if (ModelState.IsValid)
             {
                 var employee = _mapper.Map<Employee>(employeeDto);
@@ -44,6 +43,28 @@ namespace ManageEmployeesNet8.Controllers
             //If the model is not valid, the view is returned with the errors.
             return View(employeeDto);
 
+        }
+
+        [HttpGet("Edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            Employee employee = await _emRepo.GetEmployee(id);
+            var employeeDto = _mapper.Map<EmployeeDto>(employee);
+            return View(employeeDto);
+        }
+
+        [HttpPost("Edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id, EmployeeDto employeeDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var employee = _mapper.Map<Employee>(employeeDto);
+                await _emRepo.UpdateEmployee(employee);
+                return RedirectToAction(nameof(Index));
+            }
+
+            //If the model is not valid, the view is returned with the errors.
+            return View(employeeDto);
         }
     }
 }
