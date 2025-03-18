@@ -1,3 +1,4 @@
+using EmployeeNet8.Repository.Interface;
 using ManageEmployeesNet8.Data;
 using ManageEmployeesNet8.Mapper;
 using ManageEmployeesNet8.Repository.Interface;
@@ -15,6 +16,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IPayrollRepository, PayrollRepository>();
+builder.Services.AddScoped<IPayrollDetailRepository, PayrollDetailRepository>();
 
 //Add AutoMapper
 builder.Services.AddAutoMapper(typeof(ManageEmployeeMapper));

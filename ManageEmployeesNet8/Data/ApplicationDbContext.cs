@@ -11,5 +11,6 @@ namespace ManageEmployeesNet8.Data
 
         public DbSet<Employee> Employee { get; set; }
         public DbSet<Payroll> Payroll { get; set; }
+        public DbSet<PayrollDetail> PayrollDetail { get; set; }
     }
 }

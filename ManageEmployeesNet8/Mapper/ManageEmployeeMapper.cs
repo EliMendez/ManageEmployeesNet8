@@ -12,9 +12,13 @@ namespace ManageEmployeesNet8.Mapper
             CreateMap<Employee, EmployeeDto>().ReverseMap();
             CreateMap<Employee, CreateEmployeeDto>().ReverseMap();
 
-            //Employee
+            //Payroll
             CreateMap<Payroll, PayrollDto>().ReverseMap();
             CreateMap<Payroll, CreatePayrollDto>().ReverseMap();
+
+            //PayrollDetail
+            CreateMap<PayrollDetail, PayrollDetailDto>().ReverseMap();
+            CreateMap<PayrollDetail, CreatePayrollDetailDto>().ReverseMap();
         }
     }
 }
