@@ -2,7 +2,24 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+    <div class="offset-3 col-3">
+        <div class="card border-secondary mb-3" style="max-width: 18rem;">
+            <div class="card-header">Empleados</div>
+            <div class="card-body text-secondary text-center">
+                <h5 class="card-title">Gestionar empleados</h5>
+                <p class="card-text">Este apartado es para listar, crear, editar y eliminar empleados.</p>
+                <a class="btn btn-primary" asp-controller="Employee" asp-action="Index">Ver listado</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card border-secondary mb-3" style="max-width: 18rem;">
+            <div class="card-header">Header</div>
+            <div class="card-body text-secondary">
+                <h5 class="card-title">Secondary card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            </div>
+        </div>
+    </div>
 </div>
