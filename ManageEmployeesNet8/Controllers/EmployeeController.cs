@@ -66,5 +66,20 @@ namespace ManageEmployeesNet8.Controllers
             //If the model is not valid, the view is returned with the errors.
             return View(employeeDto);
         }
+
+        [HttpPost("Delete/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var employee = await _emRepo.GetEmployee(id);
+                await _emRepo.DeleteEmployee(employee);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
