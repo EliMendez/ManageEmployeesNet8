@@ -3,6 +3,7 @@ using ManageEmployeesNet8.Enum;
 using ManageEmployeesNet8.Models;
 using ManageEmployeesNet8.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ManageEmployeesNet8.Repository.Service
 {
@@ -29,7 +30,7 @@ namespace ManageEmployeesNet8.Repository.Service
             return await SaveAsync();
         }
 
-        public async Task<Employee> GetEmployee(int EmployeeId)
+        public async Task<Employee> GetEmployeeById(int EmployeeId)
         {
             return await _db.Employee.FirstOrDefaultAsync(e => e.Id == EmployeeId);
         }

@@ -7,7 +7,7 @@ namespace ManageEmployeesNet8.Repository.Interface
     {
         Task<ICollection<Employee>> GetEmployees();
         Task<ICollection<Employee>> GetEmployeesByHiringType(HiringType Type, DateTime PayrollEndDate);
-        Task<Employee> GetEmployee(int EmployeeId);
+        Task<Employee> GetEmployeeById(int EmployeeId);
         Task<bool> CreateEmployee(Employee Employee);
         Task<bool> UpdateEmployee(Employee Employee);
         Task<bool> DeleteEmployee(Employee Employee);

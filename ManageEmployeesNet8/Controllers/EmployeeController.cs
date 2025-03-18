@@ -48,7 +48,7 @@ namespace ManageEmployeesNet8.Controllers
         [HttpGet("Edit/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            Employee employee = await _emRepo.GetEmployee(id);
+            Employee employee = await _emRepo.GetEmployeeById(id);
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
             return View(employeeDto);
         }
@@ -72,7 +72,7 @@ namespace ManageEmployeesNet8.Controllers
         {
             try
             {
-                var employee = await _emRepo.GetEmployee(id);
+                var employee = await _emRepo.GetEmployeeById(id);
                 await _emRepo.DeleteEmployee(employee);
                 return Json(new { success = true });
             }
