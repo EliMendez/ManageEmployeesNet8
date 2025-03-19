@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ManageEmployeesNet8.Enum;
 using ManageEmployeesNet8.Utils;
 using EmployeeNet8.Repository.Interface;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ManageEmployeesNet8.Controllers
 {
@@ -103,16 +104,69 @@ namespace ManageEmployeesNet8.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            //Si el modelo no es valido, se regresa la vista con los errores.
+            //If the model is not valid, the view is returned with the errors.
             return View(payrollDto);
         }
 
+        [HttpPost("Recalculate/{id:int}")]
+        public async Task<IActionResult> Recalculate(int id)
+        {
+            return await RecalculatePayrollDetails(id);
+        }
+
+        [HttpPost("Delete/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var payroll = await _paRepo.GetPayrollById(id);
+                if (payroll == null)
+                {
+                    return NotFound("Planilla no encontrada");
+                }
+
+                await _paRepo.DeletePayroll(payroll);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
+        [HttpGet("Detail/{id:int}/Salary")]
+        public async Task<IActionResult> SalaryDetail(int id)
+        {
+            Payroll payroll = await _paRepo.GetPayrollById(id); ;
+            if (payroll == null)
+            {
+                return NotFound("Planilla no encontrada");
+            }
+
+            var details = await _pdRepo.GetPayrollDetails(id);
+            ViewData["PayrollId"] = id;
+            return View(details);
+        }
+
+        [HttpGet("Detail/{id:int}/Fees")]
+        public async Task<IActionResult> FeesDetail(int id)
+        {
+            Payroll payroll = await _paRepo.GetPayrollById(id); ;
+            if (payroll == null)
+            {
+                return NotFound("Planilla no encontrada");
+            }
+
+            var details = await _pdRepo.GetPayrollDetails(id);
+            ViewData["PayrollId"] = id;
+            return View(details);
+        }
 
         private DateTime CalculateEndDate(DateTime startDate, DateTime endDate, Period period)
         {
             if (period == Period.Monthly)
             {
-                // Obtener el último día del mes para la fecha de inicio
                 endDate = new DateTime(startDate.Year, startDate.Month, DateTime.DaysInMonth(startDate.Year, startDate.Month));
             }
             else if (period == Period.Biweekly)
@@ -216,12 +270,12 @@ namespace ManageEmployeesNet8.Controllers
                     var baseSalary = employee.Salary;
                     var (isss, afp, rent, netSalary) = CalculatePayrollValues(baseSalary, payroll.PayrollType);
 
-                    // Buscar el detalle existente para este empleado
+                    // Search for existing details for this employee
                     var existingDetail = existingDetails.FirstOrDefault(d => d.EmployeeId == employee.Id);
 
                     if (existingDetail != null)
                     {
-                        // Actualizar detalle existente
+                        // Update existing detail
                         existingDetail.BaseSalary = baseSalary;
                         existingDetail.ISSS = isss;
                         existingDetail.AFP = afp;
@@ -238,7 +292,7 @@ namespace ManageEmployeesNet8.Controllers
                     }
                 }
 
-                //Eliminar los detalles que ya no se encuentran en la lista de empleados.
+                // Delete details that are not in the employee list.
                 var employeeIds = employees.Select(x => x.Id).ToList();
                 foreach (var detail in existingDetails)
                 {
@@ -248,12 +302,12 @@ namespace ManageEmployeesNet8.Controllers
                     }
                 }
 
-                return RedirectToAction(nameof(Index)); // Redirigir a la vista de lista de planillas
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, "Ocurrió un error al recalcular los detalles de la planilla: " + ex.Message);
-                return View("Error"); // Puedes crear una vista de error personalizada
+                return View("Error");
             }
         }
     }

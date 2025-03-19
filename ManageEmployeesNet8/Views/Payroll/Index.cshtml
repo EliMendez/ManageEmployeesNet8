@@ -43,11 +43,31 @@
                                                 <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
                                                 <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
                                                 <td>
+                                                    @if (item.PayrollType == PayrollType.Payroll)
+                                                    {
+                                                        <a type="button" class="btn btn-secondary" asp-controller="Payroll"
+                                                           asp-action="SalaryDetail" asp-route-id="@item.Id">
+                                                            <i class="bi bi-eye-fill"></i>
+                                                            Detalle
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a type="button" class="btn btn-secondary" asp-controller="Payroll"
+                                                           asp-action="FeesDetail" asp-route-id="@item.Id">
+                                                            <i class="bi bi-eye-fill"></i>
+                                                            Detalle
+                                                        </a>
+                                                    }
                                                     <a type="button" class="btn btn-primary" asp-controller="Payroll"
                                                        asp-action="Edit" asp-route-id="@item.Id">
                                                         <i class="bi bi-pencil-square"></i>
                                                         Editar
                                                     </a>
+                                                    <button class="btn btn-danger btn-eliminar" data-id="@item.Id">
+                                                        <i class="bi bi-trash-fill"></i>
+                                                        Eliminar
+                                                    </button>
                                                 </td>
                                             </tr>
                                         }
