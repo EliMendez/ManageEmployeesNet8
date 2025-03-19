@@ -75,6 +75,39 @@ namespace ManageEmployeesNet8.Controllers
             }
         }
 
+        [HttpGet("Edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            Payroll payroll = await _paRepo.GetPayrollById(id);
+            if (payroll == null)
+            {
+                return NotFound("Planilla no encontrada");
+            }
+
+            var payrollDto = _mapper.Map<PayrollDto>(payroll);
+            return View(payrollDto);
+        }
+
+        [HttpPost("Edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id, PayrollDto payrollDto)
+        {
+            if (ModelState.IsValid)
+            {
+                // Lógica para guardar la planilla...
+                payrollDto.EndDate = CalculateEndDate(payrollDto.StartDate, payrollDto.EndDate, payrollDto.Period);
+
+                var payroll = _mapper.Map<Payroll>(payrollDto);
+                var payrollUpdated = await _paRepo.UpdatePayroll(payroll);
+
+                await RecalculatePayrollDetails(payrollUpdated.Id);
+                return RedirectToAction(nameof(Index));
+            }
+
+            //Si el modelo no es valido, se regresa la vista con los errores.
+            return View(payrollDto);
+        }
+
+
         private DateTime CalculateEndDate(DateTime startDate, DateTime endDate, Period period)
         {
             if (period == Period.Monthly)
@@ -155,6 +188,73 @@ namespace ManageEmployeesNet8.Controllers
                 Rent = rent,
                 NetSalary = netSalary,
             };
+        }
+
+        private async Task<IActionResult> RecalculatePayrollDetails(int payrollId)
+        {
+            try
+            {
+                var payroll = await _paRepo.GetPayrollById(payrollId);
+                if (payroll == null)
+                {
+                    return NotFound("Planilla no encontrada");
+                }
+
+                var existingDetails = await _pdRepo.GetPayrollDetails(payrollId);
+                ICollection<Employee> employees;
+                if (payroll.PayrollType == PayrollType.Payroll)
+                {
+                    employees = await _emRepo.GetEmployeesByHiringType(HiringType.Salaried, payroll.EndDate);
+                }
+                else
+                {
+                    employees = await _emRepo.GetEmployeesByHiringType(HiringType.ProfessionalFees, payroll.EndDate);
+                }
+
+                foreach (var employee in employees)
+                {
+                    var baseSalary = employee.Salary;
+                    var (isss, afp, rent, netSalary) = CalculatePayrollValues(baseSalary, payroll.PayrollType);
+
+                    // Buscar el detalle existente para este empleado
+                    var existingDetail = existingDetails.FirstOrDefault(d => d.EmployeeId == employee.Id);
+
+                    if (existingDetail != null)
+                    {
+                        // Actualizar detalle existente
+                        existingDetail.BaseSalary = baseSalary;
+                        existingDetail.ISSS = isss;
+                        existingDetail.AFP = afp;
+                        existingDetail.Rent = rent;
+                        existingDetail.NetSalary = netSalary;
+
+                        await _pdRepo.UpdatePayrollDetail(existingDetail);
+                    }
+                    else
+                    {
+                        // Crear nuevo detalle si no existe
+                        var newPayrollDetail = CreatePayrollDetail(payroll, employee, baseSalary, isss, afp, rent, netSalary);
+                        await _pdRepo.CreatePayrollDetail(newPayrollDetail);
+                    }
+                }
+
+                //Eliminar los detalles que ya no se encuentran en la lista de empleados.
+                var employeeIds = employees.Select(x => x.Id).ToList();
+                foreach (var detail in existingDetails)
+                {
+                    if (!employeeIds.Contains(detail.EmployeeId))
+                    {
+                        await _pdRepo.DeletePayrollDetail(detail);
+                    }
+                }
+
+                return RedirectToAction(nameof(Index)); // Redirigir a la vista de lista de planillas
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Ocurrió un error al recalcular los detalles de la planilla: " + ex.Message);
+                return View("Error"); // Puedes crear una vista de error personalizada
+            }
         }
     }
 }

@@ -1,0 +1,42 @@
+﻿@using ManageEmployeesNet8.Enum;
+@model ManageEmployeesNet8.Models.Dto.PayrollDto;
+
+@{
+    ViewData["Title"] = "Editar planilla";
+}
+
+<div class="row">
+    <div class="col-sm-9 offset-sm-2">
+        <div class="card">
+            <div class="card-header">
+                Editar planilla
+            </div>
+            <div class="card-body">
+                <form asp-controller="Payroll" asp-action="Edit" method="post">
+                    <div class="row">
+                        <div class="col-sm-3 mb-2">
+                            <label class="form-check-label">Tipo de planilla *</label>
+                            <select class="form-select" asp-for="PayrollType" asp-items="Html.GetEnumSelectList<PayrollType>()"></select>
+                            <span asp-validation-for="PayrollType" class="text-danger"></span>
+                        </div>
+                        <div class="col-sm-3 mb-2">
+                            <label>Fecha de inicio *</label>
+                            <input class="form-control date" asp-for="StartDate" type="date" placeholder="dd/mm/aaaa" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-sm-3 mb-2">
+                            <label class="form-check-label">Periodo *</label>
+                            <select class="form-select" asp-for="Period" asp-items="Html.GetEnumSelectList<Period>()"></select>
+                            <span asp-validation-for="Period" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="mb-2">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a type="button" class="btn btn-secondary" asp-controller="Payroll" asp-action="Index">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

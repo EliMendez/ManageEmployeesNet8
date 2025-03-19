@@ -43,7 +43,11 @@
                                                 <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
                                                 <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
                                                 <td>
-                                                    
+                                                    <a type="button" class="btn btn-primary" asp-controller="Payroll"
+                                                       asp-action="Edit" asp-route-id="@item.Id">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                        Editar
+                                                    </a>
                                                 </td>
                                             </tr>
                                         }
